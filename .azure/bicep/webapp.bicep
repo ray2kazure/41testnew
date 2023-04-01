@@ -1,8 +1,9 @@
-param webAppName string = uniqueString(resourceGroup().id)// Generate unique String for web app name
+param webAppName string = uniqueString(resourceGroup().id) // Generate unique String for web app name
 param sku string = 'S1' // The SKU of App Service Plan
-param location string = resourceGroup().location
-
+param linuxFxVersion string = 'DOTNETCORE|6.0' // The runtime stack of web app
+param location string = resourceGroup().location // Location for all resources
 var appServicePlanName = toLower('AppServicePlan-${webAppName}')
+var webSiteName = toLower('wapp-${webAppName}')
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: appServicePlanName
@@ -15,14 +16,14 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   }
   kind: 'linux'
 }
+
 resource appService 'Microsoft.Web/sites@2020-06-01' = {
-  name: webAppName
-  kind: 'app'
+  name: webSiteName
   location: location
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|6.0'
+      linuxFxVersion: linuxFxVersion
     }
   }
 }
